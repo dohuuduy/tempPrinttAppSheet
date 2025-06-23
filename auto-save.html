@@ -3,111 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Save Phiếu Chi</title>
+    <title>Phiếu Chi TT200</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
+            font-family: 'Times New Roman', serif;
             background: #f5f5f5;
+            color: #333;
+            line-height: 1.4;
         }
-        .container {
+
+        /* Container cho toàn bộ trang */
+        .page-container {
+            max-width: 900px;
+            margin: 20px auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
         }
-        .loading {
+
+        /* Thanh công cụ - chỉ hiển thị trên màn hình */
+        .toolbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .toolbar h1 {
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .toolbar-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-primary:hover {
+            background: #218838;
+        }
+
+        .btn-secondary {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-secondary:hover {
+            background: #c82333;
+        }
+
+        /* Container nội dung phiếu chi */
+        .document-container {
+            padding: 40px;
+            background: white;
+            min-height: 700px;
+        }
+
+        /* Header phiếu chi */
+        .document-header {
             text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 25px;
+        }
+
+        .document-header .company-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .document-header .company-address {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .document-header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-transform: uppercase;
+            color: #2c3e50;
+            letter-spacing: 2px;
+        }
+
+        .document-header .document-info {
+            font-size: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .document-info span {
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        /* Bảng thông tin */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 14px;
+        }
+
+        .info-table td {
+            padding: 12px 15px;
+            border: 1px solid #333;
+            vertical-align: top;
+        }
+
+        .info-table .label {
+            background: #f8f9fa;
+            font-weight: bold;
+            width: 20%;
+            color: #495057;
+        }
+
+        .info-table .value {
+            background: white;
+        }
+
+        .info-table .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: right;
+        }
+
+        /* Phần chữ ký */
+        .signature-section {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .signature-box {
+            padding: 20px 10px;
+        }
+
+        .signature-box .title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 80px;
+            color: #2c3e50;
+        }
+
+        .signature-box .signature-line {
+            border-top: 1px solid #333;
+            padding-top: 8px;
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Footer */
+        .document-footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            font-style: italic;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .document-container {
+                padding: 20px;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .document-header .document-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .info-table {
+                font-size: 12px;
+            }
+            
+            .info-table td {
+                padding: 8px;
+            }
+        }
+
+        /* Print styles - ẩn toolbar khi in */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .page-container {
+                box-shadow: none;
+                border-radius: 0;
+                margin: 0;
+                max-width: none;
+            }
+            
+            .toolbar {
+                display: none !important;
+            }
+            
+            .document-container {
+                padding: 20mm;
+            }
+            
+            .signature-section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
             color: #666;
         }
-        .success {
-            color: #28a745;
-            text-align: center;
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
         }
-        .error {
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
             color: #dc3545;
-            text-align: center;
-        }
-        .preview {
-            border: 1px solid #ddd;
-            padding: 20px;
-            margin: 20px 0;
-            background: #f9f9f9;
-        }
-        .download-btn {
-            background: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
+            padding: 40px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
             border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px 5px;
-        }
-        .download-btn:hover {
-            background: #0056b3;
-        }
-        pre {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
+            margin: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🗂️ Tự động lưu Phiếu Chi TT200</h1>
-        <div id="status" class="loading">
-            <p>⏳ Đang xử lý dữ liệu từ AppSheet...</p>
+    <div class="page-container">
+        <!-- Thanh công cụ -->
+        <div class="toolbar">
+            <h1>📄 Phiếu Chi TT200</h1>
+            <div class="toolbar-buttons">
+                <button class="btn btn-primary" onclick="printDocument()">
+                    🖨️ In phiếu
+                </button>
+                <button class="btn btn-secondary" onclick="exportToPDF()">
+                    📑 Xuất PDF
+                </button>
+                <button class="btn" onclick="downloadHTML()">
+                    💾 Tải HTML
+                </button>
+                <button class="btn" onclick="copyContent()">
+                    📋 Copy
+                </button>
+            </div>
         </div>
-        
-        <div id="result" style="display: none;">
-            <div class="success">
-                <p>✅ Đã tạo file HTML thành công!</p>
+
+        <!-- Nội dung phiếu chi -->
+        <div class="document-container" id="documentContent">
+            <div id="loadingState" class="loading">
+                <div class="spinner"></div>
+                <span>Đang tải dữ liệu...</span>
             </div>
             
-            <div style="text-align: center; margin: 20px 0;">
-                <button class="download-btn" onclick="downloadHTML()">
-                    📥 Tải xuống file HTML
-                </button>
-                <button class="download-btn" onclick="copyToClipboard()">
-                    📋 Copy HTML Code
-                </button>
-                <button class="download-btn" onclick="showPreview()">
-                    👁️ Xem trước
-                </button>
+            <div id="errorState" class="error-message" style="display: none;">
+                <h3>❌ Không thể tải dữ liệu</h3>
+                <p>Vui lòng kiểm tra lại URL và thử lại.</p>
             </div>
-            
-            <div id="preview" class="preview" style="display: none;"></div>
-            <div id="htmlCode" style="display: none;">
-                <h3>HTML Code:</h3>
-                <pre id="codeContent"></pre>
+
+            <div id="documentBody" style="display: none;">
+                <!-- Nội dung sẽ được generate bởi JavaScript -->
             </div>
         </div>
     </div>
 
     <script>
-        let htmlContent = '';
+        let documentData = {};
         let fileName = '';
 
         function getParams() {
             const params = new URLSearchParams(window.location.search);
             return {
-                donvi: params.get('donvi') || '',
-                diachi: params.get('diachi') || '',
-                quyenso: params.get('quyenso') || '',
-                so: params.get('so') || '',
-                no: params.get('no') || '',
-                co: params.get('co') || '',
-                nguoinhan: params.get('nguoinhan') || '',
-                diachinhan: params.get('diachinhan') || '',
-                lydo: params.get('lydo') || '',
-                sotien: params.get('sotien') || '',
-                kemtheo: params.get('kemtheo') || '',
+                donvi: decodeURIComponent(params.get('donvi') || ''),
+                diachi: decodeURIComponent(params.get('diachi') || ''),
+                quyenso: decodeURIComponent(params.get('quyenso') || ''),
+                so: decodeURIComponent(params.get('so') || ''),
+                no: decodeURIComponent(params.get('no') || ''),
+                co: decodeURIComponent(params.get('co') || ''),
+                nguoinhan: decodeURIComponent(params.get('nguoinhan') || ''),
+                diachinhan: decodeURIComponent(params.get('diachinhan') || ''),
+                lydo: decodeURIComponent(params.get('lydo') || ''),
+                sotien: decodeURIComponent(params.get('sotien') || ''),
+                kemtheo: decodeURIComponent(params.get('kemtheo') || ''),
                 ngay: params.get('ngay') || '',
                 thang: params.get('thang') || '',
                 nam: params.get('nam') || ''
@@ -116,182 +372,166 @@
 
         function formatCurrency(amount) {
             if (!amount) return '';
-            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            // Loại bỏ ký tự không phải số
+            const numStr = amount.toString().replace(/[^\d]/g, '');
+            if (!numStr) return amount;
+            return numStr.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        function generateHTML(data) {
-            const today = new Date();
-            const dateStr = `${data.ngay}/${data.thang}/${data.nam}`;
+        function generateDocumentContent(data) {
+            const dateStr = data.ngay && data.thang && data.nam ? `${data.ngay}/${data.thang}/${data.nam}` : 'Chưa có';
+            const today = new Date().toLocaleString('vi-VN');
+
+            return `
+                <div class="document-header">
+                    <div class="company-name">${data.donvi || 'TÊN ĐỢN VỊ'}</div>
+                    <div class="company-address">${data.diachi || 'Địa chỉ đơn vị'}</div>
+                    <h1>PHIẾU CHI</h1>
+                    <div class="document-info">
+                        <span><strong>Quyển số:</strong> ${data.quyenso || '___'}</span>
+                        <span><strong>Số:</strong> ${data.so || '___'}</span>
+                    </div>
+                </div>
+
+                <table class="info-table">
+                    <tr>
+                        <td class="label">Nợ:</td>
+                        <td class="value">${data.no || ''}</td>
+                        <td class="label">Có:</td>
+                        <td class="value">${data.co || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Người nhận:</td>
+                        <td class="value" colspan="3">${data.nguoinhan || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Địa chỉ:</td>
+                        <td class="value" colspan="3">${data.diachinhan || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Lý do chi:</td>
+                        <td class="value" colspan="3">${data.lydo || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Số tiền:</td>
+                        <td class="value amount" colspan="3">${formatCurrency(data.sotien)} ${data.sotien ? 'VNĐ' : ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Kèm theo:</td>
+                        <td class="value" colspan="3">${data.kemtheo || ''}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Ngày lập:</td>
+                        <td class="value" colspan="3"><strong>${dateStr}</strong></td>
+                    </tr>
+                </table>
+
+                <div class="signature-section">
+                    <div class="signature-box">
+                        <div class="title">NGƯỜI LẬP PHIẾU</div>
+                        <div class="signature-line">(Ký, ghi rõ họ tên)</div>
+                    </div>
+                    <div class="signature-box">
+                        <div class="title">KẾ TOÁN TRƯỞNG</div>
+                        <div class="signature-line">(Ký, ghi rõ họ tên)</div>
+                    </div>
+                    <div class="signature-box">
+                        <div class="title">THỦ TRƯỞNG ĐƠN VỊ</div>
+                        <div class="signature-line">(Ký, ghi rõ họ tên, đóng dấu)</div>
+                    </div>
+                </div>
+
+                <div class="document-footer">
+                    Phiếu chi được tạo tự động từ AppSheet - ${today}
+                </div>
+            `;
+        }
+
+        function loadDocument() {
+            try {
+                documentData = getParams();
+                
+                // Kiểm tra nếu có dữ liệu
+                if (!documentData.so && !documentData.donvi && !documentData.nguoinhan) {
+                    // Hiển thị dữ liệu mẫu để demo
+                    documentData = {
+                        donvi: 'CÔNG TY TNHH ABC',
+                        diachi: '123 Đường ABC, Phường XYZ, TP.HCM',
+                        quyenso: '001',
+                        so: '0001',
+                        no: '111',
+                        co: '511',
+                        nguoinhan: 'Nguyễn Văn A',
+                        diachinhan: '456 Đường DEF, Quận 1, TP.HCM',
+                        lydo: 'Chi phí văn phòng phẩm tháng 6/2025',
+                        sotien: '1500000',
+                        kemtheo: 'Hóa đơn VAT số 001',
+                        ngay: '23',
+                        thang: '6',
+                        nam: '2025'
+                    };
+                }
+
+                // Generate filename
+                fileName = `PhieuChi_${documentData.so || 'demo'}_${documentData.ngay || ''}${documentData.thang || ''}${documentData.nam || ''}.html`;
+
+                // Hiển thị nội dung
+                setTimeout(() => {
+                    document.getElementById('loadingState').style.display = 'none';
+                    document.getElementById('documentBody').style.display = 'block';
+                    document.getElementById('documentBody').innerHTML = generateDocumentContent(documentData);
+                }, 800);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('errorState').style.display = 'block';
+            }
+        }
+
+        // Chức năng in
+        function printDocument() {
+            window.print();
+        }
+
+        // Chức năng xuất PDF (sử dụng print dialog với PDF option)
+        function exportToPDF() {
+            // Tạo thông báo hướng dẫn
+            alert('💡 Hướng dẫn xuất PDF:\n\n1. Nhấn Ctrl+P (hoặc Cmd+P trên Mac)\n2. Chọn "Save as PDF" trong danh sách máy in\n3. Nhấn "Save" để lưu file PDF\n\n⏳ Cửa sổ in sẽ mở trong 2 giây...');
             
-            return `<!DOCTYPE html>
+            setTimeout(() => {
+                window.print();
+            }, 2000);
+        }
+
+        // Chức năng tải HTML
+        function downloadHTML() {
+            const fullHTML = `<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phiếu Chi TT200 - Số ${data.so}</title>
+    <title>Phiếu Chi TT200 - ${documentData.so}</title>
     <style>
-        body {
-            font-family: 'Times New Roman', serif;
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20mm;
-            background: white;
-            color: #333;
-            line-height: 1.4;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 28px;
-            font-weight: bold;
-            margin: 10px 0;
-            text-transform: uppercase;
-        }
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        .info-table td {
-            padding: 8px 12px;
-            border: 1px solid #333;
-            vertical-align: top;
-        }
-        .info-table .label {
-            background: #f5f5f5;
-            font-weight: bold;
-            width: 25%;
-        }
-        .amount {
-            font-size: 18px;
-            font-weight: bold;
-            color: #d32f2f;
-        }
-        .signature-section {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .signature-box {
-            text-align: center;
-            width: 30%;
-        }
-        .signature-line {
-            border-top: 1px solid #333;
-            margin-top: 60px;
-            padding-top: 5px;
-        }
-        @media print {
-            body { margin: 0; padding: 15mm; }
-        }
+        body { font-family: 'Times New Roman', serif; max-width: 800px; margin: 20px auto; padding: 20px; }
+        .document-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .document-header h1 { font-size: 28px; margin: 15px 0; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .info-table td { padding: 10px; border: 1px solid #333; }
+        .info-table .label { background: #f5f5f5; font-weight: bold; width: 20%; }
+        .amount { font-size: 16px; font-weight: bold; color: #d32f2f; }
+        .signature-section { margin-top: 50px; display: flex; justify-content: space-between; }
+        .signature-box { text-align: center; width: 30%; }
+        .signature-line { border-top: 1px solid #333; margin-top: 60px; padding-top: 5px; font-size: 12px; }
+        @media print { body { margin: 0; padding: 15mm; } }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div style="font-size: 14px; margin-bottom: 10px;">${data.donvi}</div>
-        <div style="font-size: 12px; margin-bottom: 20px;">${data.diachi}</div>
-        <h1>PHIẾU CHI</h1>
-        <div style="font-size: 14px;">
-            <strong>Quyển số:</strong> ${data.quyenso} &nbsp;&nbsp;&nbsp;
-            <strong>Số:</strong> ${data.so}
-        </div>
-    </div>
-
-    <table class="info-table">
-        <tr>
-            <td class="label">Nợ:</td>
-            <td>${data.no}</td>
-            <td class="label">Có:</td>
-            <td>${data.co}</td>
-        </tr>
-        <tr>
-            <td class="label">Người nhận:</td>
-            <td colspan="3">${data.nguoinhan}</td>
-        </tr>
-        <tr>
-            <td class="label">Địa chỉ:</td>
-            <td colspan="3">${data.diachinhan}</td>
-        </tr>
-        <tr>
-            <td class="label">Lý do chi:</td>
-            <td colspan="3">${data.lydo}</td>
-        </tr>
-        <tr>
-            <td class="label">Số tiền:</td>
-            <td colspan="3" class="amount">${formatCurrency(data.sotien)} VNĐ</td>
-        </tr>
-        <tr>
-            <td class="label">Kèm theo:</td>
-            <td colspan="3">${data.kemtheo}</td>
-        </tr>
-        <tr>
-            <td class="label">Ngày:</td>
-            <td colspan="3"><strong>${dateStr}</strong></td>
-        </tr>
-    </table>
-
-    <div class="signature-section">
-        <div class="signature-box">
-            <div><strong>Người lập phiếu</strong></div>
-            <div class="signature-line">(Ký, họ tên)</div>
-        </div>
-        <div class="signature-box">
-            <div><strong>Kế toán trưởng</strong></div>
-            <div class="signature-line">(Ký, họ tên)</div>
-        </div>
-        <div class="signature-box">
-            <div><strong>Thủ trưởng đơn vị</strong></div>
-            <div class="signature-line">(Ký, họ tên, đóng dấu)</div>
-        </div>
-    </div>
-
-    <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
-        <em>Phiếu chi được tạo tự động từ AppSheet vào ${today.toLocaleString('vi-VN')}</em>
-    </div>
+    ${document.getElementById('documentBody').innerHTML}
 </body>
 </html>`;
-        }
 
-        function processData() {
-            try {
-                const data = getParams();
-                
-                // Kiểm tra nếu không có dữ liệu
-                if (!data.so && !data.donvi) {
-                    document.getElementById('status').innerHTML = `
-                        <div class="error">
-                            <p>❌ Không tìm thấy dữ liệu từ AppSheet</p>
-                            <p>Vui lòng kiểm tra lại URL và thử lại.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Tạo HTML content
-                htmlContent = generateHTML(data);
-                fileName = `PhieuChi_TT200_${data.so}_${data.ngay}${data.thang}${data.nam}.html`;
-
-                // Hiển thị kết quả
-                document.getElementById('status').style.display = 'none';
-                document.getElementById('result').style.display = 'block';
-                
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('status').innerHTML = `
-                    <div class="error">
-                        <p>❌ Có lỗi xảy ra khi xử lý dữ liệu</p>
-                        <p>Chi tiết: ${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        function downloadHTML() {
-            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -300,35 +540,22 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            
-            alert('✅ File đã được tải xuống thành công!');
+
+            alert('✅ File HTML đã được tải xuống!');
         }
 
-        function copyToClipboard() {
-            navigator.clipboard.writeText(htmlContent).then(() => {
-                alert('✅ Đã copy HTML code vào clipboard!');
+        // Chức năng copy
+        function copyContent() {
+            const content = document.getElementById('documentBody').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                alert('✅ Đã copy nội dung phiếu chi!');
             }).catch(() => {
-                // Fallback cho browser không support clipboard API
-                document.getElementById('htmlCode').style.display = 'block';
-                document.getElementById('codeContent').textContent = htmlContent;
-                alert('📋 HTML code hiển thị bên dưới, vui lòng copy thủ công');
+                alert('❌ Không thể copy. Vui lòng copy thủ công.');
             });
         }
 
-        function showPreview() {
-            const previewDiv = document.getElementById('preview');
-            if (previewDiv.style.display === 'none') {
-                previewDiv.innerHTML = htmlContent;
-                previewDiv.style.display = 'block';
-            } else {
-                previewDiv.style.display = 'none';
-            }
-        }
-
-        // Chạy khi trang load
-        window.onload = function() {
-            setTimeout(processData, 1000); // Delay 1s để có hiệu ứng loading
-        };
+        // Load khi trang khởi động
+        window.onload = loadDocument;
     </script>
 </body>
 </html>
