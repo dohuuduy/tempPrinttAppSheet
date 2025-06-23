@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Save Phiếu Chi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .success {
+            color: #28a745;
+            text-align: center;
+        }
+        .error {
+            color: #dc3545;
+            text-align: center;
+        }
+        .preview {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+        }
+        .download-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .download-btn:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗂️ Tự động lưu Phiếu Chi TT200</h1>
+        <div id="status" class="loading">
+            <p>⏳ Đang xử lý dữ liệu từ AppSheet...</p>
+        </div>
+        
+        <div id="result" style="display: none;">
+            <div class="success">
+                <p>✅ Đã tạo file HTML thành công!</p>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="download-btn" onclick="downloadHTML()">
+                    📥 Tải xuống file HTML
+                </button>
+                <button class="download-btn" onclick="copyToClipboard()">
+                    📋 Copy HTML Code
+                </button>
+                <button class="download-btn" onclick="showPreview()">
+                    👁️ Xem trước
+                </button>
+            </div>
+            
+            <div id="preview" class="preview" style="display: none;"></div>
+            <div id="htmlCode" style="display: none;">
+                <h3>HTML Code:</h3>
+                <pre id="codeContent"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let htmlContent = '';
+        let fileName = '';
+
+        function getParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                donvi: params.get('donvi') || '',
+                diachi: params.get('diachi') || '',
+                quyenso: params.get('quyenso') || '',
+                so: params.get('so') || '',
+                no: params.get('no') || '',
+                co: params.get('co') || '',
+                nguoinhan: params.get('nguoinhan') || '',
+                diachinhan: params.get('diachinhan') || '',
+                lydo: params.get('lydo') || '',
+                sotien: params.get('sotien') || '',
+                kemtheo: params.get('kemtheo') || '',
+                ngay: params.get('ngay') || '',
+                thang: params.get('thang') || '',
+                nam: params.get('nam') || ''
+            };
+        }
+
+        function formatCurrency(amount) {
+            if (!amount) return '';
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function generateHTML(data) {
+            const today = new Date();
+            const dateStr = `${data.ngay}/${data.thang}/${data.nam}`;
+            
+            return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Chi TT200 - Số ${data.so}</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+            background: white;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+            text-transform: uppercase;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .info-table td {
+            padding: 8px 12px;
+            border: 1px solid #333;
+            vertical-align: top;
+        }
+        .info-table .label {
+            background: #f5f5f5;
+            font-weight: bold;
+            width: 25%;
+        }
+        .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        .signature-section {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            text-align: center;
+            width: 30%;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 60px;
+            padding-top: 5px;
+        }
+        @media print {
+            body { margin: 0; padding: 15mm; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="font-size: 14px; margin-bottom: 10px;">${data.donvi}</div>
+        <div style="font-size: 12px; margin-bottom: 20px;">${data.diachi}</div>
+        <h1>PHIẾU CHI</h1>
+        <div style="font-size: 14px;">
+            <strong>Quyển số:</strong> ${data.quyenso} &nbsp;&nbsp;&nbsp;
+            <strong>Số:</strong> ${data.so}
+        </div>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">Nợ:</td>
+            <td>${data.no}</td>
+            <td class="label">Có:</td>
+            <td>${data.co}</td>
+        </tr>
+        <tr>
+            <td class="label">Người nhận:</td>
+            <td colspan="3">${data.nguoinhan}</td>
+        </tr>
+        <tr>
+            <td class="label">Địa chỉ:</td>
+            <td colspan="3">${data.diachinhan}</td>
+        </tr>
+        <tr>
+            <td class="label">Lý do chi:</td>
+            <td colspan="3">${data.lydo}</td>
+        </tr>
+        <tr>
+            <td class="label">Số tiền:</td>
+            <td colspan="3" class="amount">${formatCurrency(data.sotien)} VNĐ</td>
+        </tr>
+        <tr>
+            <td class="label">Kèm theo:</td>
+            <td colspan="3">${data.kemtheo}</td>
+        </tr>
+        <tr>
+            <td class="label">Ngày:</td>
+            <td colspan="3"><strong>${dateStr}</strong></td>
+        </tr>
+    </table>
+
+    <div class="signature-section">
+        <div class="signature-box">
+            <div><strong>Người lập phiếu</strong></div>
+            <div class="signature-line">(Ký, họ tên)</div>
+        </div>
+        <div class="signature-box">
+            <div><strong>Kế toán trưởng</strong></div>
+            <div class="signature-line">(Ký, họ tên)</div>
+        </div>
+        <div class="signature-box">
+            <div><strong>Thủ trưởng đơn vị</strong></div>
+            <div class="signature-line">(Ký, họ tên, đóng dấu)</div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center; font-size: 12px; color: #666;">
+        <em>Phiếu chi được tạo tự động từ AppSheet vào ${today.toLocaleString('vi-VN')}</em>
+    </div>
+</body>
+</html>`;
+        }
+
+        function processData() {
+            try {
+                const data = getParams();
+                
+                // Kiểm tra nếu không có dữ liệu
+                if (!data.so && !data.donvi) {
+                    document.getElementById('status').innerHTML = `
+                        <div class="error">
+                            <p>❌ Không tìm thấy dữ liệu từ AppSheet</p>
+                            <p>Vui lòng kiểm tra lại URL và thử lại.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Tạo HTML content
+                htmlContent = generateHTML(data);
+                fileName = `PhieuChi_TT200_${data.so}_${data.ngay}${data.thang}${data.nam}.html`;
+
+                // Hiển thị kết quả
+                document.getElementById('status').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = `
+                    <div class="error">
+                        <p>❌ Có lỗi xảy ra khi xử lý dữ liệu</p>
+                        <p>Chi tiết: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function downloadHTML() {
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('✅ File đã được tải xuống thành công!');
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(htmlContent).then(() => {
+                alert('✅ Đã copy HTML code vào clipboard!');
+            }).catch(() => {
+                // Fallback cho browser không support clipboard API
+                document.getElementById('htmlCode').style.display = 'block';
+                document.getElementById('codeContent').textContent = htmlContent;
+                alert('📋 HTML code hiển thị bên dưới, vui lòng copy thủ công');
+            });
+        }
+
+        function showPreview() {
+            const previewDiv = document.getElementById('preview');
+            if (previewDiv.style.display === 'none') {
+                previewDiv.innerHTML = htmlContent;
+                previewDiv.style.display = 'block';
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        }
+
+        // Chạy khi trang load
+        window.onload = function() {
+            setTimeout(processData, 1000); // Delay 1s để có hiệu ứng loading
+        };
+    </script>
+</body>
+</html>
